@@ -205,10 +205,11 @@ func TestLexer(t *testing.T) {
 		},
 	}
 	lexer, err := initLexer()
+	require.NoError(t, err)
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			s, err := lexer.Scanner([]byte(strings.ToLower(test.scanString)))
 			require.NoError(t, err)
-			s, _ := lexer.Scanner([]byte(strings.ToLower(test.scanString)))
 
 			fmt.Printf("INPUT: %s\n", strings.ToLower(test.scanString))
 			fmt.Println("Type            | Lexeme               | Position")
