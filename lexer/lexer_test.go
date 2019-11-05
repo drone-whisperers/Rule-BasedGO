@@ -175,7 +175,7 @@ func TestLexer(t *testing.T) {
 		},
 		{
 			name:           "test should work",
-			scanString:     "Big Jet 345 turn right heading 240 degrees cleared ILS approach runway 27 Right maintain 3000ft until glide path interception",
+			scanString:     "Big Jet 345 turn right heading 240 degrees cleared ILS approach runway 27 Right maintain 3000 feet until glide path interception",
 			expectedResult: "this is test 100 replace",
 		},
 		{
@@ -185,7 +185,7 @@ func TestLexer(t *testing.T) {
 		},
 		{
 			name:           "test should work",
-			scanString:     "Big Jet 345 cleared to land runway 27 Right wind 270 degrees ten knots",
+			scanString:     "Big Jet 345 cleared to land runway 27 Right wind 270 degrees 10 knots",
 			expectedResult: "this is test 100 replace",
 		},
 		{
@@ -204,12 +204,11 @@ func TestLexer(t *testing.T) {
 			expectedResult: "this is test 100 replace",
 		},
 	}
-
+	lexer, err := initLexer()
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			lexer, err := initLexer("")
 			require.NoError(t, err)
-			s, err := lexer.Scanner([]byte(strings.ToLower(test.scanString)))
+			s, _ := lexer.Scanner([]byte(strings.ToLower(test.scanString)))
 
 			fmt.Printf("INPUT: %s\n", strings.ToLower(test.scanString))
 			fmt.Println("Type            | Lexeme               | Position")
