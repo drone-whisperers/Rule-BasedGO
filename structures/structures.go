@@ -29,6 +29,28 @@ func (t *Taxi) AddHoldPoint(h string) {
 	t.HoldPoint = h
 }
 
+//Contact is a representation of a taxi action
+type Contact struct {
+	Target    string
+	Frequency float64
+}
+
+//NewContactAction returns a taxi struct
+func NewContactAction() *Contact {
+	return &Contact{}
+}
+
+//AddFrequency adds frequency to contact
+func (c *Contact) AddFrequency(f string) {
+	n, _ := strconv.ParseFloat(f, 64)
+	c.Frequency = n
+}
+
+//AddTarget adds target to contact
+func (c *Contact) AddTarget(t string) {
+	c.Target = t
+}
+
 //HoldingPoint is a representation of a holding point
 type HoldingPoint struct {
 	Location string
@@ -56,9 +78,6 @@ func NewRunWay() *RunWay {
 
 //AddRunWayNumber adds number to runway
 func (r *RunWay) AddRunWayNumber(i string) {
-	n, err := strconv.Atoi(i)
-	if err != nil {
-		n = 0
-	}
+	n, _ := strconv.Atoi(i)
 	r.Number = n
 }

@@ -43,7 +43,8 @@ func (c *Classifier) Classify(s string) ([]interface{}, error) {
 
 		case "TAXI":
 			c.classifyTaxi()
-
+		case "CONTACT":
+			c.classifyContact()
 		default:
 			continue
 
@@ -113,6 +114,28 @@ func (c *Classifier) classifyTaxi() {
 			obj.AddHoldPoint(string(c.currentToken.Lexeme))
 		case "RUNWAY":
 			obj.AddRunWay(c.classifyRunWay())
+		case "CONNECTOR":
+			continue
+		default:
+			c.actionSlice = append(c.actionSlice, obj)
+			return
+		}
+
+	}
+	c.actionSlice = append(c.actionSlice, obj)
+}
+
+func (c *Classifier) classifyContact() {
+	obj := structures.NewContactAction()
+	for err := c.nextToken(); !c.eof; err = c.nextToken() {
+		if err != nil {
+			return
+		}
+		switch lexStruct.Tokens[c.currentToken.Type] {
+		case "TOWER":
+			obj.AddTarget(string(c.currentToken.Lexeme))
+		case "NUMBER":
+			obj.AddFrequency(string(c.currentToken.Lexeme))
 		case "CONNECTOR":
 			continue
 		default:

@@ -17,7 +17,7 @@ type testClassifyStruct struct {
 func TestClassify(t *testing.T) {
 	tests := []testClassifyStruct{
 		{
-			name:        "test should work",
+			name:        "Taxi Request",
 			inputString: "big jet 345 metro ground taxi to holding point a 1 hold short of runway 18",
 			expectedResult: []interface{}{
 				&structures.Taxi{
@@ -31,43 +31,23 @@ func TestClassify(t *testing.T) {
 				},
 			},
 		},
-		// {
-		// 	name:        "test should work",
-		// 	inputString: "big jet 345, metro ground taxi to holding point c runway 27",
-		// 	expectedResult: map[string]interface{}{
-		// 		"big jet 345":  "drone",
-		// 		"metro ground": "targer",
-		// 		"taxi": Taxi{
-		// 			holdingPoint: "c",
-		// 			holdPostion:  "",
-		// 			runway: Runway{
-		// 				number: 27,
-		// 			},
-		// 		},
-		// 	},
-		// },
-		// {
-		// 	name:        "test should work",
-		// 	inputString: "big jet 345 contact metro tower 119.2",
-		// 	expectedResult: map[string]interface{}{
-		// 		"big jet 345":  "drone",
-		// 		"metro ground": "targer",
-		// 		"taxi": Taxi{
-		// 			holdingPoint: "c",
-		// 			holdPostion:  "",
-		// 			runway: Runway{
-		// 				number: 27,
-		// 			},
-		// 		},
-		// 	},
-		// },
+		{
+			name:        "Contact Request",
+			inputString: "big jet 345 contact metro ground 119.2",
+			expectedResult: []interface{}{
+				&structures.Contact{
+					Frequency: 119.2,
+					Target:    "metro ground",
+				},
+			},
+		},
 	}
 	lexer, err := lexer.InitLexer()
 	require.NoError(t, err)
-	c := NewClassifier(lexer)
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			c := NewClassifier(lexer)
 			s, _ := c.Classify(test.inputString)
 			require.Equal(t, test.expectedResult, s)
 		})
