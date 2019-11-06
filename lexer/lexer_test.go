@@ -204,7 +204,7 @@ func TestLexer(t *testing.T) {
 			expectedResult: "this is test 100 replace",
 		},
 	}
-	lexer, err := initLexer()
+	lexer, err := InitLexer()
 	require.NoError(t, err)
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {

@@ -155,8 +155,8 @@ func initTokens() {
 	}
 }
 
-// Creates the lexer object and compiles the NFA.
-func initLexer() (*lex.Lexer, error) {
+// InitLexer Creates the lexer object and compiles the NFA.
+func InitLexer() (*lex.Lexer, error) {
 	lexer := lex.NewLexer()
 	initTokens()
 
