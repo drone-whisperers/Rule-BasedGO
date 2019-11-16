@@ -28,6 +28,15 @@ var Units []string
 // Confirmation represents keyword tokens
 var Confirmation []string
 
+// Requests represents keyword tokens
+var Requests []string
+
+// Locations represents keyword tokens
+var Locations []string
+
+// Directions represents keyword tokens
+var Directions []string
+
 // Tokens are all tokens
 var Tokens []string
 
@@ -52,16 +61,21 @@ func initTokens() {
 		"NO SPEED RESTRICTIONS",
 		"RADAR CONTACT",
 		"TRAFFIC",
-		"REPORT ESTABLISHED LOCALISER",
+		"REPORT ESTABLISHED",
+		"LOCALISER",
+		"ALTITUDE",
+		"HEADING",
+		"QNH",
+		"SPEED",
+		"ILS",
+		"APPROACH",
 	}
 
 	Actions = []string{
 		"departure",
 		"landing",
 		"line up",
-		"take off",
 		"start up",
-		"taxi instructions",
 		"climb",
 		"stop",
 		"turn",
@@ -69,10 +83,17 @@ func initTokens() {
 		"ascend",
 		"go around",
 		"land",
-		"approach",
 		"maintain",
 		"fly",
 		"leave",
+		"take off",
+		"avoid",
+		"crossing",
+		"glide path interception",
+	}
+
+	Requests = []string{
+		"taxi instructions",
 	}
 
 	Tokens = []string{
@@ -91,6 +112,7 @@ func initTokens() {
 		"UNIT",
 		"CONFIRMATION",
 		"INFO",
+		"REQUEST",
 	}
 
 	Connectors = []string{
@@ -102,6 +124,7 @@ func initTokens() {
 		"for",
 		"due",
 		"the",
+		"direct",
 		"with",
 	}
 
@@ -121,9 +144,7 @@ func initTokens() {
 		"immediately",
 		"continue",
 		"until",
-		"direct",
 		"clearance",
-		"avoid",
 		"now",
 		"amendment",
 	}
@@ -132,12 +153,9 @@ func initTokens() {
 		"feet",
 		"degrees",
 		"o'clock",
-		"altitude",
-		"heading",
-		"left",
-		"right",
 		"knots",
 		"miles",
+		"o'clock",
 	}
 
 	Confirmation = []string{
@@ -145,6 +163,24 @@ func initTokens() {
 		"roger that",
 		"roger the mayday",
 		"i say again",
+	}
+
+	Locations = []string{
+		"bonny",
+		"clyde",
+		"c 2",
+		"a 1",
+		"c",
+		"c 1",
+		"mayfield",
+		"smallville",
+		"t 1 a",
+		"t 3 f",
+	}
+
+	Directions = []string{
+		"left",
+		"right",
 	}
 
 	Tokens = append(Tokens, Keywords...)
@@ -168,7 +204,7 @@ func InitLexer() (*lex.Lexer, error) {
 	for _, hold := range HoldPoints {
 		lexer.Add([]byte(hold), token("HOLDPOINT"))
 	}
-	//Conditions Represent a conditional Statment
+	//Conditions Represent a conditional Statement
 	for _, cond := range Condition {
 		lexer.Add([]byte(cond), token("CONDITION"))
 	}
@@ -192,8 +228,24 @@ func InitLexer() (*lex.Lexer, error) {
 		lexer.Add([]byte(conf), token("CONFIRMATION"))
 	}
 
+	//Actions are a list of actions to search for
+	for _, request := range Requests {
+		lexer.Add([]byte(request), token("REQUEST"))
+	}
+
+	//Actions are a list of actions to search for
+	for _, location := range Locations {
+		lexer.Add([]byte(location), token("LOCATION"))
+	}
+
+	//Directions are a list of actions to search for
+	for _, direction := range Directions {
+		lexer.Add([]byte(direction), token("DIRECTION"))
+	}
+
 	//This assumes we know the tower name
 	lexer.Add([]byte("metro ground"), token("TOWER"))
+	lexer.Add([]byte("metro approach"), token("TOWER"))
 	lexer.Add([]byte("metro tower"), token("TOWER"))
 	lexer.Add([]byte("metro radar"), token("TOWER"))
 	lexer.Add([]byte("northern control"), token("TOWER"))
@@ -202,14 +254,13 @@ func InitLexer() (*lex.Lexer, error) {
 	lexer.Add([]byte("big jet 345"), token("DRONE"))
 
 	//Matches locations of format Letter NUMBERS letter
-	lexer.Add([]byte(`\w`), token("LOCATION"))
-	lexer.Add([]byte(`\w\s\d+`), token("LOCATION"))
-	lexer.Add([]byte(`\w\s\d+?(\s\w\s)`), token("LOCATION"))
+	// lexer.Add([]byte(`\w`), token("LOCATION"))
+	// lexer.Add([]byte(`\w\s\d+`), token("LOCATION"))
+	// lexer.Add([]byte(`\w\s\d+?(\s\w\s)`), token("LOCATION"))
 
 	//matches numbers (optional decimals)
 	lexer.Add([]byte(`-?\d+(,\d+)*(\.\d+(e\d+)?)?`), token("NUMBER"))
-
-	lexer.Add([]byte(`\d?(\d)\s\w*o'clock\w*`), token("DIRECTION"))
+	lexer.Add([]byte(`[0-9]+:[0-9]+`), token("NUMBER"))
 
 	//Matches planes
 	lexer.Add([]byte(`\w*airbus\w*\s\d+`), token("PLANE"))
@@ -239,4 +290,17 @@ func token(name string) lex.Action {
 	return func(s *lex.Scanner, m *machines.Match) (interface{}, error) {
 		return s.Token(TokenIds[name], string(m.Bytes), m), nil
 	}
+}
+
+// IsActionOrKeyword is helper function for pre and post conditions
+func IsActionOrKeyword(token *lex.Token) bool {
+	if Tokens[token.Type] == "ACTION" {
+		return true
+	}
+	for _, k := range Keywords {
+		if k == strings.ToUpper(string(token.Lexeme)) {
+			return true
+		}
+	}
+	return false
 }
