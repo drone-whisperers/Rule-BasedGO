@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"reflect"
 
 	lexStruct "github.com/Rule-BasedGO/lexer"
@@ -31,10 +32,24 @@ func NewClassifier(lexer *lex.Lexer) *Classifier {
 }
 
 //Classify classifies a sentence into objects
+func (c *Classifier) restClassifier() {
+	c = &Classifier{
+		lexer:         c.lexer,
+		scannedTokens: map[int]*lex.Token{},
+		scanIndex:     -1,
+		actionSlice:   []interface{}{},
+	}
+}
+
+//Classify classifies a sentence into objects
 func (c *Classifier) Classify(s string) ([]interface{}, error) {
 	err := c.NewScanner(s)
 	if err != nil {
 		return nil, err
+	}
+	c.nextToken()
+	if lexStruct.Tokens[c.currentToken.Type] != "DRONE" {
+		return nil, errors.New("Not current Drone")
 	}
 	for err := c.nextToken(); !c.eof; err = c.nextToken() {
 		if err != nil {
@@ -46,7 +61,10 @@ func (c *Classifier) Classify(s string) ([]interface{}, error) {
 			c.actionSlice = append(c.actionSlice, obj)
 		}
 	}
-	return c.actionSlice, nil
+	actions := c.actionSlice
+	c.actionSlice = []interface{}{}
+	c.restClassifier()
+	return actions, nil
 }
 
 //ClassifyTopLevel classifies a at the top into objects

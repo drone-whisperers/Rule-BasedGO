@@ -15,7 +15,7 @@ type testClassifyStruct struct {
 	expectedResult []interface{}
 }
 
-func TestClassify(t *testing.T) {
+func BenchmarkClassify(t *testing.B) {
 	tests := []testClassifyStruct{
 		{
 			name:        "Taxi Request",
@@ -617,11 +617,11 @@ func TestClassify(t *testing.T) {
 			},
 		},
 	}
-	lexer, err := lexer.InitLexer()
+	lexer, err := lexer.InitLexer("big jet 345")
 	require.NoError(t, err)
 
 	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
+		t.Run(test.name, func(t *testing.B) {
 			c := NewClassifier(lexer)
 			s, _ := c.Classify(strings.ToLower(test.inputString))
 			// s2, _ := json.MarshalIndent(s, "", "\t")

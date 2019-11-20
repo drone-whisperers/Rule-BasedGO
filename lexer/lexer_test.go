@@ -15,7 +15,7 @@ type testLexer struct {
 	scanString string
 }
 
-func TestLexer(t *testing.T) {
+func BenchmarkLexer(b *testing.B) {
 	tests := []testLexer{
 		{
 			name:       "test should work",
@@ -166,12 +166,12 @@ func TestLexer(t *testing.T) {
 			scanString: "Big Jet 345 roger turn right heading 140 for radar vectoring runway 09 descend to 3000 feet QNH 995 report established",
 		},
 	}
-	lexer, err := InitLexer()
-	require.NoError(t, err)
+	lexer, err := InitLexer("big jet 345")
+	require.NoError(b, err)
 	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
+		b.Run(test.name, func(b *testing.B) {
 			s, err := lexer.Scanner([]byte(strings.ToLower(test.scanString)))
-			require.NoError(t, err)
+			require.NoError(b, err)
 			fmt.Printf("INPUT: %s\n", strings.ToLower(test.scanString))
 			fmt.Println("Type            | Lexeme               | Position")
 			fmt.Println("----------------+----------------------+------------")

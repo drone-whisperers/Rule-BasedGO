@@ -192,9 +192,11 @@ func initTokens() {
 }
 
 // InitLexer Creates the lexer object and compiles the NFA.
-func InitLexer() (*lex.Lexer, error) {
+func InitLexer(name string) (*lex.Lexer, error) {
 	lexer := lex.NewLexer()
 	initTokens()
+	//This assumes we know our name
+	lexer.Add([]byte(name), token("DRONE"))
 
 	//Connectors are a list of keyword connectors
 	for _, con := range Connectors {
