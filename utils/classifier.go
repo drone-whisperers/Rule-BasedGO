@@ -33,16 +33,14 @@ func NewClassifier(lexer *lex.Lexer) *Classifier {
 
 //Classify classifies a sentence into objects
 func (c *Classifier) restClassifier() {
-	c = &Classifier{
-		lexer:         c.lexer,
-		scannedTokens: map[int]*lex.Token{},
-		scanIndex:     -1,
-		actionSlice:   []interface{}{},
-	}
+	c.actionSlice = []interface{}{}
+	c.scannedTokens = map[int]*lex.Token{}
+	c.scanIndex = -1
 }
 
 //Classify classifies a sentence into objects
 func (c *Classifier) Classify(s string) ([]interface{}, error) {
+	c.restClassifier()
 	err := c.NewScanner(s)
 	if err != nil {
 		return nil, err
@@ -63,7 +61,6 @@ func (c *Classifier) Classify(s string) ([]interface{}, error) {
 	}
 	actions := c.actionSlice
 	c.actionSlice = []interface{}{}
-	c.restClassifier()
 	return actions, nil
 }
 
@@ -242,6 +239,8 @@ func (c *Classifier) classifyTaxi() *structures.Taxi {
 			obj.AddHoldPoint(string(c.currentToken.Lexeme))
 		case "RUNWAY":
 			obj.AddRunWay(c.classifyRunWay())
+		case "INFO":
+			continue
 		case "CONNECTOR":
 			continue
 		default:
@@ -266,8 +265,8 @@ func (c *Classifier) classifyContact() *structures.Contact {
 			obj.AddFrequency(string(c.currentToken.Lexeme))
 		case "INFO":
 			obj.AddRequest(string(c.currentToken.Lexeme))
-		case "REQUEST":
-			obj.AddRequest(string(c.currentToken.Lexeme))
+		case "ACTION", "TAXI":
+			obj.AddRequest(c.classifyTopLevel())
 		case "CONNECTOR":
 			continue
 		default:
@@ -290,6 +289,8 @@ func (c *Classifier) classifyCross() *structures.Cross {
 			obj.AddRunWay(c.classifyRunWay())
 		case "LOCATION":
 			obj.AddLocation(string(c.currentToken.Lexeme))
+		case "INFO":
+			continue
 		case "CONNECTOR":
 			continue
 		default:
@@ -312,6 +313,8 @@ func (c *Classifier) classifyHoldingPoint() *structures.HoldingPoint {
 		switch lexStruct.Tokens[c.currentToken.Type] {
 		case "LOCATION":
 			obj.AddHoldingPointLocation(string(c.currentToken.Lexeme))
+		case "INFO":
+			continue
 		case "CONNECTOR":
 			continue
 		default:
@@ -331,6 +334,8 @@ func (c *Classifier) classifyStartUp() *structures.StartUp {
 			return nil
 		}
 		switch lexStruct.Tokens[c.currentToken.Type] {
+		case "INFO":
+			continue
 		case "CONDITION":
 			obj.AddCondition(c.classifyCondition())
 		default:
@@ -399,7 +404,8 @@ func (c *Classifier) classifyCondition() *structures.Condition {
 				}
 			}
 			return obj
-
+		case "INFO":
+			continue
 		default:
 			{
 				c.backToken()
@@ -455,6 +461,8 @@ func (c *Classifier) classifyLanding() *structures.Landing {
 		switch lexStruct.Tokens[c.currentToken.Type] {
 		case "PLANE":
 			obj.AddPlane(string(c.currentToken.Lexeme))
+		case "INFO":
+			continue
 		default:
 			c.backToken()
 			return obj
@@ -472,6 +480,8 @@ func (c *Classifier) classifyLineUp() *structures.LineUp {
 		switch lexStruct.Tokens[c.currentToken.Type] {
 		case "RUNWAY":
 			obj.AddRunWay(c.classifyRunWay())
+		case "INFO":
+			continue
 		case "CONNECTOR":
 			continue
 		default:
@@ -498,6 +508,8 @@ func (c *Classifier) classifyDeparture() *structures.Departure {
 			obj.AddHeading(c.classifyHeading())
 		case "SQUAWK":
 			obj.AddSquawk(c.classifySquawk())
+		case "INFO":
+			continue
 		case "CONNECTOR":
 			continue
 		default:
@@ -525,6 +537,8 @@ func (c *Classifier) classifyClimb() *structures.Climb {
 			obj.AddAltitude(c.classifyAltitude())
 		case "CONDITION":
 			obj.AddCondition(c.classifyCondition())
+		case "INFO":
+			continue
 		case "CONNECTOR":
 			continue
 		default:
@@ -556,6 +570,8 @@ func (c *Classifier) classifyDescendAction() *structures.Descend {
 			obj.AddQNH(c.classifyQNH())
 		case "SPEED":
 			obj.AddSpeed(c.classifySpeed())
+		case "INFO":
+			continue
 		case "CONNECTOR":
 			continue
 		default:
@@ -579,6 +595,8 @@ func (c *Classifier) classifyAltitude() *structures.Altitude {
 			obj.AddNumber(string(c.currentToken.Lexeme))
 		case "FL":
 			obj.AddFlightLevel(c.classifyFlightLevel())
+		case "INFO":
+			continue
 		case "CONNECTOR":
 			continue
 		default:
@@ -596,6 +614,8 @@ func (c *Classifier) classifyTakeOff() *structures.TakeOff {
 			return nil
 		}
 		switch lexStruct.Tokens[c.currentToken.Type] {
+		case "INFO":
+			continue
 		case "CONNECTOR":
 			continue
 		default:
@@ -613,6 +633,8 @@ func (c *Classifier) classifyStop() *structures.Stop {
 			return nil
 		}
 		switch lexStruct.Tokens[c.currentToken.Type] {
+		case "INFO":
+			continue
 		case "CONDITION":
 			obj.AddCondition(c.classifyCondition())
 		default:
@@ -634,6 +656,8 @@ func (c *Classifier) classifyFlyAction() *structures.Fly {
 			obj.AddHeading(c.classifyHeading())
 		case "LOCATION":
 			obj.AddLocation(string(c.currentToken.Lexeme))
+		case "INFO":
+			continue
 		case "CONNECTOR":
 			continue
 		default:
@@ -655,6 +679,8 @@ func (c *Classifier) classifyHeading() *structures.Heading {
 			obj.AddNumber(string(c.currentToken.Lexeme))
 		case "UNIT":
 			obj.AddUnit(string(c.currentToken.Lexeme))
+		case "INFO":
+			continue
 		case "CONNECTOR":
 			continue
 		default:
@@ -676,6 +702,8 @@ func (c *Classifier) classifyFlightLevel() *structures.FlightLevel {
 			obj.AddLevel(string(c.currentToken.Lexeme))
 		case "NO SPEED RESTRICTIONS":
 			obj.AddAdditionalInfo(string(c.currentToken.Lexeme))
+		case "INFO":
+			continue
 		case "CONNECTOR":
 			continue
 		default:
@@ -705,6 +733,8 @@ func (c *Classifier) classifyTurnAction() *structures.Turn {
 			obj.AddCondition(c.classifyCondition())
 		case "SPEED":
 			obj.AddSpeed(c.classifySpeed())
+		case "INFO":
+			continue
 		case "CONNECTOR":
 			continue
 		default:
@@ -724,6 +754,8 @@ func (c *Classifier) classifyAvoidAction() *structures.Avoid {
 		switch lexStruct.Tokens[c.currentToken.Type] {
 		case "TRAFFIC":
 			obj.AddObject(c.classifyTraffic())
+		case "INFO":
+			continue
 		case "CONNECTOR":
 			continue
 		default:
@@ -774,6 +806,8 @@ func (c *Classifier) classifyDistance() *structures.Distance {
 			obj.AddUnit(string(c.currentToken.Lexeme))
 		case "NUMBER":
 			obj.AddNumber(string(c.currentToken.Lexeme))
+		case "INFO":
+			continue
 		case "CONNECTOR":
 			continue
 		default:
@@ -829,6 +863,8 @@ func (c *Classifier) classifyQNH() *structures.QNH {
 		switch lexStruct.Tokens[c.currentToken.Type] {
 		case "NUMBER":
 			obj.AddPressure(string(c.currentToken.Lexeme))
+		case "INFO":
+			continue
 		case "CONNECTOR":
 			continue
 		default:
@@ -850,6 +886,8 @@ func (c *Classifier) classifySpeed() *structures.Speed {
 			obj.AddNumber(string(c.currentToken.Lexeme))
 		case "UNIT":
 			obj.AddUnit(string(c.currentToken.Lexeme))
+		case "INFO":
+			continue
 		case "CONNECTOR":
 			continue
 		default:
@@ -871,6 +909,8 @@ func (c *Classifier) classifyILS() *structures.ILS {
 			obj.AddRunWay(c.classifyRunWay())
 		case "DIRECTION":
 			obj.AddDirection(string(c.currentToken.Lexeme))
+		case "INFO":
+			continue
 		case "APPROACH":
 			continue
 		case "CONNECTOR":
@@ -890,6 +930,8 @@ func (c *Classifier) classifyGlidePathInterception() *structures.GlidePathInterc
 			return nil
 		}
 		switch lexStruct.Tokens[c.currentToken.Type] {
+		case "INFO":
+			continue
 		case "CONNECTOR":
 			continue
 		default:
@@ -914,6 +956,8 @@ func (c *Classifier) classifyMaintain() *structures.Maintain {
 			obj.AddAltitude(c.classifyAltitude())
 		case "CONDITION":
 			obj.AddCondition(c.classifyCondition())
+		case "INFO":
+			continue
 		case "CONNECTOR":
 			continue
 		default:
@@ -931,6 +975,8 @@ func (c *Classifier) classifyApproach() *structures.Approach {
 			return nil
 		}
 		switch lexStruct.Tokens[c.currentToken.Type] {
+		case "INFO":
+			continue
 		case "CONNECTOR":
 			continue
 		default:
@@ -954,6 +1000,8 @@ func (c *Classifier) classifyLandAction() *structures.Land {
 			obj.AddDirection(string(c.currentToken.Lexeme))
 		case "WIND":
 			obj.AddWind(c.classifyWind())
+		case "INFO":
+			continue
 		case "CONNECTOR":
 			continue
 		default:
@@ -988,6 +1036,8 @@ func (c *Classifier) classifyWind() *structures.Wind {
 				c.nextToken()
 				obj.Speed.AddUnit(string(c.currentToken.Lexeme))
 			}
+		case "INFO":
+			continue
 		case "CONNECTOR":
 			continue
 		default:
@@ -1005,6 +1055,8 @@ func (c *Classifier) classifyGoAround() *structures.GoAround {
 			return nil
 		}
 		switch lexStruct.Tokens[c.currentToken.Type] {
+		case "INFO":
+			continue
 		case "CONNECTOR":
 			continue
 		default:
@@ -1026,6 +1078,8 @@ func (c *Classifier) classifyRadarVectors() *structures.RadarVectors {
 			obj.AddILS(c.classifyILS())
 		case "RUNWAY":
 			obj.AddRunWay(c.classifyRunWay())
+		case "INFO":
+			continue
 		case "CONNECTOR":
 			continue
 		default:
@@ -1047,6 +1101,8 @@ func (c *Classifier) classifySquawk() *structures.Squawk {
 			obj.AddNumber(string(c.currentToken.Lexeme))
 		case "SLOT TIME":
 			obj.AddSlotTime(c.classifySlotTime())
+		case "INFO":
+			continue
 		case "CONNECTOR":
 			continue
 		default:
@@ -1066,6 +1122,8 @@ func (c *Classifier) classifySlotTime() *structures.SlotTime {
 		switch lexStruct.Tokens[c.currentToken.Type] {
 		case "NUMBER":
 			obj.AddNumber(string(c.currentToken.Lexeme))
+		case "INFO":
+			continue
 		case "CONNECTOR":
 			continue
 		default:

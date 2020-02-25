@@ -64,7 +64,7 @@ func BenchmarkClassify(t *testing.B) {
 		},
 		{
 			name:        "Start up Action with Contact request",
-			inputString: "Big Jet 345 start up approved contact Metro Ground 118.75 for taxi instructions",
+			inputString: "Big Jet 345 start up approved contact Metro Ground 118.75 for turn instructions",
 			expectedResult: []interface{}{
 				&structures.StartUp{
 					Condition: &structures.Condition{
@@ -74,7 +74,7 @@ func BenchmarkClassify(t *testing.B) {
 				&structures.Contact{
 					Frequency: 118.75,
 					Target:    "metro ground",
-					Request:   []string{"taxi instructions"},
+					Request:   &structures.Turn{},
 				},
 			},
 		},
@@ -624,8 +624,8 @@ func BenchmarkClassify(t *testing.B) {
 		t.Run(test.name, func(t *testing.B) {
 			c := NewClassifier(lexer)
 			s, _ := c.Classify(strings.ToLower(test.inputString))
-			// s2, _ := json.MarshalIndent(s, "", "\t")
-			// fmt.Println(string(s2))
+			// fmt.Println("Classified Statement:")
+			// fmt.Printf("%# v\n", pretty.Formatter(s))
 			require.Equal(t, test.expectedResult, s)
 		})
 	}

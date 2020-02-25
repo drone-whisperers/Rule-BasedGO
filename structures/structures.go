@@ -35,7 +35,7 @@ func (t *Taxi) AddHoldPoint(h string) {
 type Contact struct {
 	Target    string
 	Frequency float64
-	Request   []string
+	Request   interface{}
 }
 
 //NewContactAction returns a taxi struct
@@ -55,8 +55,8 @@ func (c *Contact) AddTarget(t string) {
 }
 
 //AddRequest adds target to contact
-func (c *Contact) AddRequest(s string) {
-	c.Request = append(c.Request, s)
+func (c *Contact) AddRequest(i interface{}) {
+	c.Request = i
 }
 
 //HoldingPoint is a representation of a holding point

@@ -13,7 +13,7 @@ type testNewSlice struct {
 	expectedResult string
 }
 
-func TestNewSlice(t *testing.T) {
+func BenchmarkNewSlice(t *testing.B) {
 	tests := []testNewSlice{
 		{
 			name:      "test should work",
@@ -44,7 +44,7 @@ func TestNewSlice(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
+		t.Run(test.name, func(t *testing.B) {
 			s := newSlice(test.originalS, test.s)
 			require.Equal(t, test.expectedResult, s)
 		})
@@ -57,7 +57,7 @@ type testIntSliceToNum struct {
 	expectedResult string
 }
 
-func TestIntSliceToNum(t *testing.T) {
+func BenchmarkIntSliceToNum(t *testing.B) {
 	tests := []testIntSliceToNum{
 		{
 			name:           "test should work",
@@ -77,7 +77,7 @@ func TestIntSliceToNum(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
+		t.Run(test.name, func(t *testing.B) {
 			s := intSliceToNum(test.slice)
 			require.Equal(t, test.expectedResult, s)
 		})
@@ -90,37 +90,37 @@ type testWordToNum struct {
 	expectedResult string
 }
 
-func TestWordToNum(t *testing.T) {
+func BenchmarkWordToNum(t *testing.B) {
 	tests := []testWordToNum{
 		{
-			name:           "test should work",
+			name:           "forty five thousand three hundred ninety five",
 			s:              "forty five thousand three hundred ninety five",
 			expectedResult: "45395",
 		},
 		{
-			name:           "test should work",
+			name:           "forty five thousand three hundred five five",
 			s:              "forty five thousand three hundred five five",
 			expectedResult: "45355",
 		},
 		{
-			name:           "test should work",
+			name:           "four five thousand three hundred five five",
 			s:              "four five thousand three hundred five five",
 			expectedResult: "45355",
 		},
 		{
-			name:           "test should work",
+			name:           "forty five thousand three five five",
 			s:              "forty five thousand three five five",
 			expectedResult: "45355",
 		},
 		{
-			name:           "test should work",
+			name:           "one one nine point five three",
 			s:              "one one nine point five three",
 			expectedResult: "119.53",
 		},
 	}
 
 	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
+		t.Run(test.name, func(t *testing.B) {
 			s := wordToNum(test.s)
 			require.Equal(t, test.expectedResult, s)
 		})

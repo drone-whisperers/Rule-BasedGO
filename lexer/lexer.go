@@ -92,10 +92,6 @@ func initTokens() {
 		"glide path interception",
 	}
 
-	Requests = []string{
-		"taxi instructions",
-	}
-
 	Tokens = []string{
 		"COMMENT",
 		"ID",
@@ -251,9 +247,6 @@ func InitLexer(name string) (*lex.Lexer, error) {
 	lexer.Add([]byte("metro tower"), token("TOWER"))
 	lexer.Add([]byte("metro radar"), token("TOWER"))
 	lexer.Add([]byte("northern control"), token("TOWER"))
-
-	//This assumes we know our name
-	lexer.Add([]byte("big jet 345"), token("DRONE"))
 
 	//Matches locations of format Letter NUMBERS letter
 	// lexer.Add([]byte(`\w`), token("LOCATION"))

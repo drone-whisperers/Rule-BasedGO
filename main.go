@@ -13,7 +13,6 @@ func main() {
 	statementChan := make(chan string)
 	stopchan := make(chan struct{})
 
-	go setupDrone("other jet 345", statementChan, stopchan)
 	setupDrone("big jet 345", statementChan, stopchan)
 
 	fmt.Print("Input stream now open: ")
