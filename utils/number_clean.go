@@ -22,7 +22,7 @@ type slicedInt struct {
 	num   string
 }
 
-func wordToNum(s string) string {
+func WordToNum(s string) string {
 	var num []int
 	var start int
 	var end int

@@ -66,6 +66,7 @@ func (d *Drone) ClassifyStatements(statementChan chan string, stopchan chan stru
 				fmt.Println("DRONES CURRENT QUEUE:")
 				fmt.Printf("%# v\n", pretty.Formatter(d.Tasks))
 			}
+			fmt.Println(err)
 		case <-stopchan:
 			return
 		}

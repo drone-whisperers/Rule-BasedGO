@@ -121,7 +121,7 @@ func BenchmarkWordToNum(t *testing.B) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.B) {
-			s := wordToNum(test.s)
+			s := WordToNum(test.s)
 			require.Equal(t, test.expectedResult, s)
 		})
 	}
