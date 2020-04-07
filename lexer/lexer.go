@@ -37,6 +37,9 @@ var Locations []string
 // Directions represents keyword tokens
 var Directions []string
 
+// Directions represents keyword tokens
+var Drones []string
+
 // Tokens are all tokens
 var Tokens []string
 
@@ -172,6 +175,26 @@ func initTokens() {
 		"smallville",
 		"t 1 a",
 		"t 3 f",
+		"a4",
+		"a7",
+		"f5",
+		"d4",
+	}
+
+	Drones = []string{
+		"airbus 80",
+		"big jet 208",
+		"airbus 780",
+		"lockheed 794",
+		"cessna 671",
+		"airbus 430",
+		"airbus 420",
+		"supermarine spitfire 218",
+		"big jet 229",
+		"big jet 420",
+		"airbus 697",
+		"big jet 107",
+		"cessna 420",
 	}
 
 	Directions = []string{
@@ -193,6 +216,10 @@ func InitLexer(name string) (*lex.Lexer, error) {
 	initTokens()
 	//This assumes we know our name
 	lexer.Add([]byte(name), token("DRONE"))
+
+	for _, drone := range Drones {
+		lexer.Add([]byte(drone), token("DRONE"))
+	}
 
 	//Connectors are a list of keyword connectors
 	for _, con := range Connectors {
@@ -247,6 +274,9 @@ func InitLexer(name string) (*lex.Lexer, error) {
 	lexer.Add([]byte("metro tower"), token("TOWER"))
 	lexer.Add([]byte("metro radar"), token("TOWER"))
 	lexer.Add([]byte("northern control"), token("TOWER"))
+	lexer.Add([]byte("pearson radar"), token("TOWER"))
+	lexer.Add([]byte("kennedy ground"), token("TOWER"))
+	lexer.Add([]byte("carleton radar"), token("TOWER"))
 
 	//Matches locations of format Letter NUMBERS letter
 	// lexer.Add([]byte(`\w`), token("LOCATION"))
@@ -266,6 +296,7 @@ func InitLexer(name string) (*lex.Lexer, error) {
 
 	//skip useless characters
 	lexer.Add([]byte("( |\t|\n|\r)+"), skip)
+	lexer.Add([]byte("."), skip)
 
 	err := lexer.Compile()
 	if err != nil {

@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"errors"
+	// "errors"
 	"reflect"
 
 	lexStruct "github.com/Rule-BasedGO/lexer"
@@ -47,7 +47,7 @@ func (c *Classifier) Classify(s string) ([]interface{}, error) {
 	}
 	c.nextToken()
 	if lexStruct.Tokens[c.currentToken.Type] != "DRONE" {
-		return nil, errors.New("Not current Drone")
+		// return nil, errors.New("Not current Drone")
 	}
 	for err := c.nextToken(); !c.eof; err = c.nextToken() {
 		if err != nil {
@@ -529,7 +529,7 @@ func (c *Classifier) classifyClimb() *structures.Climb {
 		switch lexStruct.Tokens[c.currentToken.Type] {
 		case "ALTITUDE":
 			obj.AddAltitude(c.classifyAltitude())
-		case "FL":
+		case "FL", "FLIGHT LEVEL":
 			c.backToken()
 			obj.AddAltitude(c.classifyAltitude())
 		case "NUMBER":
@@ -558,7 +558,7 @@ func (c *Classifier) classifyDescendAction() *structures.Descend {
 		switch lexStruct.Tokens[c.currentToken.Type] {
 		case "ALTITUDE":
 			obj.AddAltitude(c.classifyAltitude())
-		case "FL":
+		case "FL", "FLIGHT LEVEL":
 			c.backToken()
 			obj.AddAltitude(c.classifyAltitude())
 		case "NUMBER":
@@ -593,7 +593,7 @@ func (c *Classifier) classifyAltitude() *structures.Altitude {
 			obj.AddUnit(string(c.currentToken.Lexeme))
 		case "NUMBER":
 			obj.AddNumber(string(c.currentToken.Lexeme))
-		case "FL":
+		case "FL", "FLIGHT LEVEL":
 			obj.AddFlightLevel(c.classifyFlightLevel())
 		case "INFO":
 			continue

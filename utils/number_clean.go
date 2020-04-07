@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-var ones = map[string]int{"zero": 0, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9}
+var ones = map[string]int{"zero": 0, "o": 0, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9}
 
 var teens = map[string]int{"eleven": 11, "twelve": 12, "thirteen": 13, "fourteen": 14, "fifteen": 15, "sixteen": 16, "seventeen": 17, "eighteen": 18, "nineteen": 19}
 
@@ -97,7 +97,23 @@ func intSliceToNum(slice []int) string {
 			j := 1
 			for {
 				if slice[i+j] < 10 {
-					tempNum = tempNum + strconv.Itoa(slice[i+j])
+					if slice[i] > 10 {
+						convInt, _ := strconv.Atoi(tempNum)
+						add := convInt + slice[i+j]
+						tempNum = strconv.Itoa(add)
+					} else {
+						tempNum = tempNum + strconv.Itoa(slice[i+j])
+					}
+					i++
+					if i+j != len(slice)-1 {
+						break
+					}
+					continue
+				}
+				if slice[i+j] > 10 && slice[i+j] < 100 {
+					convInt, _ := strconv.Atoi(tempNum)
+					add := convInt*100 + slice[i+j]
+					tempNum = strconv.Itoa(add)
 					i++
 					if i+j != len(slice)-1 {
 						break

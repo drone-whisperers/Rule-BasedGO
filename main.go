@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"net"
+	"os"
 	"strings"
 
 	"github.com/Rule-BasedGO/drone"
@@ -16,8 +17,8 @@ func main() {
 
 	setupDrone("big jet 345", statementChan, stopchan)
 
-	fmt.Println("listening on port 16669")
-	ln, err := net.Listen("tcp", ":16669")
+	fmt.Println(fmt.Sprintf("listening on port %s", os.Getenv("LISTEN_PORT")))
+	ln, err := net.Listen("tcp", fmt.Sprintf(":%s", os.Getenv("LISTEN_PORT")))
 	if err != nil {
 		fmt.Println(err)
 		// handle error
@@ -45,7 +46,7 @@ func handleRequest(conn net.Conn, statementChan chan string) {
 		fmt.Println("Error reading:", err.Error())
 	}
 	n := bytes.Index(buf, []byte{0})
-	message := string(buf[:n-1])
+	message := string(buf[:n])
 	fmt.Println("message received: ", message)
 	cleaned := utils.WordToNum(strings.ToLower(message))
 	statementChan <- cleaned
